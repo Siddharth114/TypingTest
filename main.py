@@ -11,7 +11,7 @@ def start_screen(stdscr):
 
 
 def load_text():
-    with open('text.txt', 'r') as f:
+    with open('TypingTest/text.txt', 'r') as f:
         lines = [i.strip() for i in f.readlines()]
         return (' '.join(random.sample(lines, 20)))
 
@@ -34,13 +34,14 @@ def wpm_test(stdscr):
 
     while True:
         time_elapsed = max(time.time()-start_time, 1)
-        wpm = round((len(current_text)/(time_elapsed/60))/5)
+        wpm_test.wpm = round((len(current_text)/(time_elapsed/60))/5)
 
         stdscr.clear()
-        display_text(stdscr, target_text, current_text, wpm)
+        display_text(stdscr, target_text, current_text, wpm_test.wpm)
         stdscr.refresh()
         
-        if ''.join(current_text)==target_text:
+        if len(''.join(current_text))==len(target_text):
+            wpm_test.errors = len([i for i in range(len(target_text)) if target_text[i]!=current_text[i]])
             stdscr.nodelay(False)
             break
 
@@ -69,7 +70,8 @@ def main(stdscr):
     start_screen(stdscr)
     while True:
         wpm_test(stdscr)
-        stdscr.addstr(2,0,'You have completed the test! Press any key to continue or ESC to exit.')
+        stdscr.addstr(2,0,'You have completed the test with ' + str(wpm_test.errors) + ' errors. Adjusted WPM: ' + str(wpm_test.wpm - wpm_test.errors))
+        stdscr.addstr(3, 0, 'Press any key to restart or ESC to exit.')
         key = stdscr.getkey()
         if ord(key)==27:
             break
