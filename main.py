@@ -5,15 +5,23 @@ import random
 
 def start_screen(stdscr):
     stdscr.clear()
-    stdscr.addstr('Welcome to my typing test! \nPress any key to continue.')
+    stdscr.addstr('Welcome to my typing test! \nPress any key to continue')
     stdscr.refresh()
     stdscr.getkey()
 
+def num_words(stdscr):
+    curses.echo() 
+    stdscr.clear()
+    stdscr.addstr('Enter the number of words you want to test: \n')
+    stdscr.refresh()
+    input = stdscr.getstr(1,0)
+    return int(input)
 
-def load_text():
-    with open('TypingTest/text.txt', 'r') as f:
+
+def load_text(words):
+    with open('/Users/siddharth/Code/Python/TypingTest/text.txt', 'r') as f:
         lines = [i.strip() for i in f.readlines()]
-        return (' '.join(random.sample(lines, 20)))
+        return (' '.join(random.sample(lines, words)))
 
 def display_text(stdscr, target, current, wpm=0):
     stdscr.addstr(1, 0, f'WPM:{wpm}')
@@ -25,8 +33,8 @@ def display_text(stdscr, target, current, wpm=0):
         else:
             stdscr.addstr(0, x, target[x], curses.color_pair(2))
 
-def wpm_test(stdscr):
-    target_text = load_text()
+def wpm_test(stdscr, words):
+    target_text = load_text(words)
     current_text = []    
     wpm = 0
     start_time = time.time()
@@ -68,8 +76,9 @@ def main(stdscr):
     curses.init_pair(3,curses.COLOR_WHITE, curses.COLOR_BLACK)
     
     start_screen(stdscr)
+    words = num_words(stdscr)
     while True:
-        wpm_test(stdscr)
+        wpm_test(stdscr, words)
         stdscr.addstr(2,0,'You have completed the test with ' + str(wpm_test.errors) + ' errors. Adjusted WPM: ' + str(wpm_test.wpm - wpm_test.errors))
         stdscr.addstr(3, 0, 'Press any key to restart or ESC to exit.')
         key = stdscr.getkey()
